@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { Alert } from "../BootstrapModule";
+import DetailNav from "./DetailNav";
 
 // 컴포넌트의 lifecycle
 // 페이지에 장착됨 (mount)
@@ -28,26 +29,24 @@ import { Alert } from "../BootstrapModule";
 
 const DetailPage = ({ shoes }) => {
   const [alertSwitch, setalertSwitch] = useState(true);
-  const [input, setInput] = useState("");
-  useEffect(() => {
-    const counter = setTimeout(() => {
-      setalertSwitch(false);
-    }, 3000);
-    return () => {
-      clearTimeout(counter);
-    };
-  });
-
-  useEffect(() => {
-    if (isNaN(input)) {
-      alert("don't input String");
-      setInput("");
-    }
-  });
+  const navigate = useNavigate();
 
   let { id } = useParams();
-  const findRouteShoes = shoes.find((item) => item.id === Number(id));
+  useEffect(() => {
+    // !findRouteShoes && navigate("/");
+    // findRouteShoes === {} && navigate("/");
+    // !findRouteShoes.src && navigate("/");
+    // JSON.stringify(findRouteShoes) === "{}" && navigate("/");
+    findRouteShoes &&
+      Object.keys(findRouteShoes).length === 0 &&
+      findRouteShoes.constructor === Object &&
+      navigate("/");
+  }, []);
+
+  const findRouteShoes = shoes.find((item) => item.id === Number(id)) ?? {};
+
   const { src, title, content, price } = findRouteShoes;
+
   return (
     <>
       {alertSwitch && (
@@ -62,25 +61,13 @@ const DetailPage = ({ shoes }) => {
             <img src={src} width="100%" />
           </div>
           <div className="col-md-6">
-            <input
-              style={{
-                width: "100%",
-                height: "40px",
-                borderRadius: "25px",
-                border: "0.1px solid black",
-                padding: "15px",
-              }}
-              onChange={(event) => {
-                setInput(event.target.value);
-              }}
-              value={input}
-            />
             <h4 className="pt-5">{title}</h4>
             <p>{content}</p>
             <p>{price}</p>
             <button className="btn btn-danger">주문하기</button>
           </div>
         </div>
+        <DetailNav />
       </div>
     </>
   );

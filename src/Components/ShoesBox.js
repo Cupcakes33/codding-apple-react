@@ -1,9 +1,11 @@
 import { Col } from "../BootstrapModule";
 import { Navigate, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const ShoesBox = ({ item }) => {
   const { src, title, content, price, id } = item;
   const navigate = useNavigate();
+
   return (
     <Col
       md={4}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./App.css";
 import bg from "./img/bg.png";
 import styled from "styled-components";
@@ -6,10 +6,30 @@ import ShopContents from "./Components/ShopContents";
 import ShopNavbar from "./Components/ShopNavbar";
 import ShopData from "./DATA/ShopData";
 import DetailPage from "./Components/DetailPage";
-import { Routes, Route, Link, useNavigate, Outlet } from "react-router-dom";
+import { Routes, Route, useNavigate, Outlet } from "react-router-dom";
+import axios from "axios";
 
 function App() {
   const [shoes, setShoes] = useState(ShopData);
+  const counter = useRef(2);
+  const dataAjaxHandler = () => {
+    if (counter.current > 1 && counter.current < 4) {
+      axios
+        .get(`https://codingapple1.github.io/shop/data${counter.current}.json`)
+        .then((res) => {
+          setShoes((prev) => {
+            return [...prev, ...res.data];
+          });
+          console.log(res.data);
+          counter.current += 1;
+        })
+        .catch(() => {
+          console.log("Ajax 요청에 실패하였습니다.");
+          counter.current += 1;
+        });
+    } else {
+    }
+  };
 
   return (
     <>
@@ -21,16 +41,19 @@ function App() {
             <>
               <StyledBgImg />
               <ShopContents shoes={shoes} />
+              <button onClick={dataAjaxHandler}>button</button>
             </>
           }
         />
         <Route path="/detail/:id" element={<DetailPage shoes={shoes} />} />
+
         {/* react nested route 404 page ? */}
         {/* 중첩 라우팅 < ? */}
         <Route path="/about" element={<About />}>
           <Route path="one" element={<p>첫번째 주문시 배추즙 서비스</p>} />
           <Route path="two" element={<p>두번째 주문시 배즙 서비스</p>} />
           <Route path="three" element={<p>세번째 주문시 양배추즙 서비스</p>} />
+          <Route path="*" element={<div>404</div>} />
         </Route>
       </Routes>
     </>
@@ -86,5 +109,8 @@ export default App;
 
 // 서버 : 부탁하면 진짜로 들어주는 프로그램
 // 어떤방법? (GET/POST) 어떤자료? (URL)
-// 
-
+// 브라우저 검색창이 가장 대표적인 get 요청
+// = ajax 요청
+// 서버로 데이터 전송하는 post 요청
+// promise.all([axios.get(1), axios.get(2)]).then(()=>{})
+//
